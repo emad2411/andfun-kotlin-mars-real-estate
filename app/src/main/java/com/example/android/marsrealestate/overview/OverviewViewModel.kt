@@ -26,9 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
@@ -39,11 +36,16 @@ class OverviewViewModel : ViewModel() {
 
 
     // The internal MutableLiveData String that stores the status of the most recent request
-    private val _response = MutableLiveData<String>()
+    private val _status = MutableLiveData<String>()
 
     // The external immutable LiveData for the request status String
-    val response: LiveData<String>
-        get() = _response
+    val status: LiveData<String>
+        get() = _status
+
+
+    private val _property=MutableLiveData<MarsProperty>()
+    val property:LiveData<MarsProperty> get() = _property
+
 
 
     /**
@@ -57,16 +59,18 @@ class OverviewViewModel : ViewModel() {
      * Sets the value of the status LiveData to the Mars API status.
      */
     private fun getMarsRealEstateProperties() {
-        _response.value = "Set the Mars API Response here!"
+        _status.value = "Set the Mars API Response here!"
 
         coroutineScope.launch {
             val getPropertiesDeferred=MarsApi.retrofitService.getProperties()
             try {
                 val resultList=getPropertiesDeferred.await()
-                _response.value="Success: ${resultList.size}"
+                if (resultList.size>0){
+                    _property.value=resultList.get(0)
+                }
 
             } catch (e: Exception) {
-                _response.value="Failure: ${e.message}"
+                _status.value="Failure: ${e.message}"
             }
         }
 
