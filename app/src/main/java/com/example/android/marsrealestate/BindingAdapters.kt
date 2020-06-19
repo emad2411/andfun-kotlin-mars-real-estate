@@ -18,6 +18,7 @@
 package com.example.android.marsrealestate
 
 import android.graphics.drawable.Drawable
+import android.view.View
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.android.marsrealestate.network.MarsProperty
+import com.example.android.marsrealestate.overview.OverviewViewModel.MarsApiStatus
 import com.example.android.marsrealestate.overview.PhotoGridAdapter
 import retrofit2.http.Url
 @BindingAdapter("imageUrl")
@@ -45,5 +47,24 @@ fun bindImage(imgView:ImageView,imgUrl: String?){
 fun bindRecyclerView(recyclerView: RecyclerView, data: List<MarsProperty>?) {
     val adapter = recyclerView.adapter as PhotoGridAdapter
     adapter.submitList(data)
+}
+
+@BindingAdapter("MarsApiStatus")
+fun apiStatus(statusImgView: ImageView,apiStatus: MarsApiStatus?){
+    when(apiStatus){
+        MarsApiStatus.LOADING->{
+            statusImgView.visibility=View.VISIBLE
+            statusImgView.setImageResource(R.drawable.loading_animation)
+        }
+        MarsApiStatus.ERROR ->{
+            statusImgView.setImageResource(R.drawable.ic_connection_error)
+        }
+        MarsApiStatus.DONE->{
+            statusImgView.visibility=View.GONE
+        }
+
+
+    }
+
 }
 

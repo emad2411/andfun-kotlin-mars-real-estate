@@ -34,8 +34,10 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/photosGrid"
+            listData="@{viewModel.properties}"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:clipToPadding="false"
             android:padding="6dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -44,10 +46,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:clipToPadding="false"
             app:spanCount="2"
             tools:itemCount="16"
-            tools:listitem="@layout/grid_view_item"
-            listData="@{viewModel.properties}"/>
+            tools:listitem="@layout/grid_view_item" />
+
+        <ImageView
+            android:id="@+id/status_image"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:MarsApiStatus="@{viewModel.status}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/photosGrid"
+            app:layout_constraintTop_toTopOf="@+id/photosGrid"
+            tools:src="@drawable/ic_connection_error" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

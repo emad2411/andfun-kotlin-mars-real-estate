@@ -20,10 +20,12 @@ package com.example.android.marsrealestate.overview
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.android.marsrealestate.R
 import com.example.android.marsrealestate.databinding.FragmentOverviewBinding
-import com.example.android.marsrealestate.databinding.GridViewItemBinding
+import com.example.android.marsrealestate.network.ApiFilter
 
 /**
  * This fragment shows the the status of the Mars real-estate web services transaction.
@@ -45,13 +47,28 @@ class OverviewFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val binding = FragmentOverviewBinding.inflate(inflater)
 
-        binding.photosGrid.adapter=PhotoGridAdapter()
+
 
         // Allows Data Binding to Observe LiveData with the lifecycle of this Fragment
         binding.setLifecycleOwner(this)
 
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
+        binding.photosGrid.adapter=PhotoGridAdapter(ItemListener {
+            property->
+            viewModel.displayDetails(property)
+
+        })
+
+        viewModel.navigateToSelectedProperty.observe(viewLifecycleOwner, Observer {
+            selectedProperty->
+            if(selectedProperty!=null){
+                this.findNavController().navigate(
+                        OverviewFragmentDirections.actionShowDetail(selectedProperty))
+                viewModel.doneNavigating()
+            }
+
+        })
 
         setHasOptionsMenu(true)
         return binding.root
@@ -63,5 +80,14 @@ class OverviewFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.overflow_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        viewModel.updateFilter(when(item!!.itemId){
+            R.id.show_buy_menu->ApiFilter.SHOW_SALE
+            R.id.show_rent_menu->ApiFilter.SHOW_RENT
+            else -> ApiFilter.SHOW_ALL
+        })
+        return true
     }
 }
